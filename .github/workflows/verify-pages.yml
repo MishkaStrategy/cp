@@ -1,0 +1,37 @@
+name: Verify published Dusha page
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live HTML and assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://mishkastrategy.github.io/cp/dusha"
+          ok=0
+          for attempt in {1..12}; do
+            code="$(curl -L -sS -o /tmp/dusha.html -w '%{http_code}' "$base/")" || true
+            echo "attempt=$attempt html_status=$code"
+            if [ "$code" = "200" ] && grep -q 'Душа — цифровое продолжение заведения' /tmp/dusha.html; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          test "$(curl -L -sS -o /tmp/styles.css -w '%{http_code}' "$base/styles.css")" = "200"
+          test "$(curl -L -sS -o /tmp/styles1.css -w '%{http_code}' "$base/styles-1.css")" = "200"
+          test "$(curl -L -sS -o /tmp/script.js -w '%{http_code}' "$base/script.js")" = "200"
+          test "$(curl -L -sS -o /tmp/favicon.svg -w '%{http_code}' "$base/assets/favicon.svg")" = "200"
+          grep -q '@import url("styles-1.css")' /tmp/styles.css
+          grep -q 'IntersectionObserver' /tmp/script.js
+          echo "LIVE_HTTP_OK"
