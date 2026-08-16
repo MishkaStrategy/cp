@@ -1,8 +1,19 @@
 (() => {
   'use strict';
+
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(pointer:fine)').matches;
   const header = document.querySelector('[data-header]');
   const reveals = [...document.querySelectorAll('.reveal')];
+  const serpent = document.querySelector('#serpentPath');
+  const hero = document.querySelector('.hero');
+  const heroAtmosphere = document.querySelector('.hero-atmosphere');
+  const materialBoard = document.querySelector('.material-board');
+  const browserFrame = document.querySelector('.browser-frame');
+  const processRibbon = document.querySelector('.process-ribbon');
+  const finalTitle = document.querySelector('.final-title');
+
+  document.documentElement.classList.add('motion-ready');
 
   if (header) {
     const syncHeader = () => header.classList.toggle('scrolled', window.scrollY > 24);
@@ -18,52 +29,115 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.13, rootMargin: '0px 0px -7% 0px' });
+    }, { threshold: 0.11, rootMargin: '0px 0px -5% 0px' });
+
     reveals.forEach((node, index) => {
-      node.style.transitionDelay = `${Math.min(index % 4, 3) * 55}ms`;
+      node.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 55}ms`);
       observer.observe(node);
     });
   } else {
     reveals.forEach((node) => node.classList.add('is-visible'));
   }
 
-  if (!reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+  if (serpent && !reduceMotion) {
+    const length = serpent.getTotalLength();
+    serpent.style.strokeDasharray = `${length}`;
+    serpent.style.strokeDashoffset = `${length}`;
+
+    const drawSerpent = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      const progress = Math.min(1, Math.max(0, scrollY / max));
+      serpent.style.strokeDashoffset = `${length * (1 - progress)}`;
+      serpent.style.opacity = `${0.18 + progress * 0.42}`;
+    };
+    drawSerpent();
+    window.addEventListener('scroll', drawSerpent, { passive: true });
+  }
+
+  if (!reduceMotion && finePointer) {
     document.querySelectorAll('.spotlight-card').forEach((card) => {
       card.addEventListener('pointermove', (event) => {
         const rect = card.getBoundingClientRect();
-        card.style.setProperty('--spot-x', `${event.clientX - rect.left}px`);
-        card.style.setProperty('--spot-y', `${event.clientY - rect.top}px`);
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const rx = ((y / rect.height) - .5) * -4;
+        const ry = ((x / rect.width) - .5) * 5;
+        card.style.setProperty('--spot-x', `${x}px`);
+        card.style.setProperty('--spot-y', `${y}px`);
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
       });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
     });
 
     document.querySelectorAll('.magnetic').forEach((button) => {
       button.addEventListener('pointermove', (event) => {
         const rect = button.getBoundingClientRect();
-        const x = (event.clientX - rect.left - rect.width / 2) * 0.08;
-        const y = (event.clientY - rect.top - rect.height / 2) * 0.12;
-        button.style.transform = `translate3d(${x}px,${y}px,0)`;
+        const x = (event.clientX - rect.left - rect.width / 2) * 0.1;
+        const y = (event.clientY - rect.top - rect.height / 2) * 0.14;
+        button.style.transform = `translate3d(${x}px,${y}px,0) scale(1.025)`;
       });
       button.addEventListener('pointerleave', () => { button.style.transform = ''; });
     });
+
+    if (hero && heroAtmosphere) {
+      hero.addEventListener('pointermove', (event) => {
+        const rect = hero.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        heroAtmosphere.style.transform = `translate3d(${x * -12}px,${y * -8}px,0) scale(1.015)`;
+        hero.style.setProperty('--hero-x', `${50 + x * 16}%`);
+        hero.style.setProperty('--hero-y', `${42 + y * 14}%`);
+      });
+      hero.addEventListener('pointerleave', () => { heroAtmosphere.style.transform = ''; });
+    }
   }
 
   if (!reduceMotion) {
     const parallaxNodes = [...document.querySelectorAll('[data-parallax]')];
     let ticking = false;
+
     const render = () => {
       const y = window.scrollY;
+      const vh = window.innerHeight || 1;
+
       parallaxNodes.forEach((node) => {
         const speed = Number(node.dataset.parallax || 0);
-        node.style.transform = `translate3d(0,${Math.max(-18, Math.min(18, y * speed))}px,0)`;
+        node.style.transform = `translate3d(0,${Math.max(-28, Math.min(28, y * speed))}px,0)`;
       });
+
+      const shiftByViewport = (node, amount, rotate = 0) => {
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const progress = Math.max(-1, Math.min(1, (vh * .5 - (rect.top + rect.height * .5)) / vh));
+        node.style.transform = `translate3d(0,${progress * amount}px,0) rotate(${rotate + progress * .4}deg)`;
+      };
+
+      shiftByViewport(materialBoard, 18, 2);
+      shiftByViewport(browserFrame, 12, 0);
+      if (processRibbon) {
+        const rect = processRibbon.getBoundingClientRect();
+        const progress = Math.max(-1, Math.min(1, (vh - rect.top) / (vh + rect.height)));
+        processRibbon.style.setProperty('--ribbon-shift', `${progress * -38}px`);
+      }
+      if (finalTitle) {
+        const rect = finalTitle.getBoundingClientRect();
+        const progress = Math.max(-1, Math.min(1, (vh - rect.top) / vh));
+        finalTitle.style.setProperty('--final-track', `${progress * -0.018}em`);
+      }
+
       ticking = false;
     };
-    window.addEventListener('scroll', () => {
+
+    const requestRender = () => {
       if (!ticking) {
         requestAnimationFrame(render);
         ticking = true;
       }
-    }, { passive: true });
+    };
+
+    render();
+    window.addEventListener('scroll', requestRender, { passive: true });
+    window.addEventListener('resize', requestRender, { passive: true });
   }
 
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
