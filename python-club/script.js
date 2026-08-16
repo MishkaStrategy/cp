@@ -3,6 +3,7 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(pointer:fine)').matches;
+  const isMobile = window.matchMedia('(max-width:760px)').matches;
   const header = document.querySelector('[data-header]');
   const reveals = [...document.querySelectorAll('.reveal')];
   const serpent = document.querySelector('#serpentPath');
@@ -37,6 +38,24 @@
     });
   } else {
     reveals.forEach((node) => node.classList.add('is-visible'));
+  }
+
+  if (!reduceMotion && isMobile && 'IntersectionObserver' in window) {
+    const interactiveMobile = [
+      ...document.querySelectorAll('.evidence-card'),
+      ...document.querySelectorAll('.scenario-card'),
+      ...document.querySelectorAll('.role-node'),
+      ...document.querySelectorAll('.scope-row'),
+      ...document.querySelectorAll('.result-grid article')
+    ];
+
+    const mobileObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle('mobile-active', entry.isIntersecting && entry.intersectionRatio > 0.42);
+      });
+    }, { threshold: [0.18, 0.42, 0.7], rootMargin: '-8% 0px -12% 0px' });
+
+    interactiveMobile.forEach((node) => mobileObserver.observe(node));
   }
 
   if (serpent && !reduceMotion) {
@@ -102,7 +121,8 @@
 
       parallaxNodes.forEach((node) => {
         const speed = Number(node.dataset.parallax || 0);
-        node.style.transform = `translate3d(0,${Math.max(-28, Math.min(28, y * speed))}px,0)`;
+        const cap = isMobile ? 15 : 28;
+        node.style.transform = `translate3d(0,${Math.max(-cap, Math.min(cap, y * speed))}px,0)`;
       });
 
       const shiftByViewport = (node, amount, rotate = 0) => {
@@ -112,17 +132,26 @@
         node.style.transform = `translate3d(0,${progress * amount}px,0) rotate(${rotate + progress * .4}deg)`;
       };
 
-      shiftByViewport(materialBoard, 18, 2);
-      shiftByViewport(browserFrame, 12, 0);
+      shiftByViewport(materialBoard, isMobile ? 10 : 18, 2);
+      shiftByViewport(browserFrame, isMobile ? 8 : 12, 0);
+
       if (processRibbon) {
         const rect = processRibbon.getBoundingClientRect();
         const progress = Math.max(-1, Math.min(1, (vh - rect.top) / (vh + rect.height)));
-        processRibbon.style.setProperty('--ribbon-shift', `${progress * -38}px`);
+        processRibbon.style.setProperty('--ribbon-shift', `${progress * (isMobile ? -16 : -38)}px`);
       }
+
       if (finalTitle) {
         const rect = finalTitle.getBoundingClientRect();
         const progress = Math.max(-1, Math.min(1, (vh - rect.top) / vh));
-        finalTitle.style.setProperty('--final-track', `${progress * -0.018}em`);
+        finalTitle.style.setProperty('--final-track', `${progress * (isMobile ? -0.01 : -0.018)}em`);
+      }
+
+      if (isMobile && heroAtmosphere && hero) {
+        const heroRect = hero.getBoundingClientRect();
+        const progress = Math.max(-1, Math.min(1, -heroRect.top / Math.max(1, heroRect.height)));
+        heroAtmosphere.style.transform = `translate3d(0,${progress * 12}px,0) scale(${1 + progress * .015})`;
+        hero.style.setProperty('--hero-y', `${36 + progress * 10}%`);
       }
 
       ticking = false;
