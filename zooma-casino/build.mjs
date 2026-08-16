@@ -1,0 +1,27 @@
+import { readFile, access } from 'node:fs/promises';
+const required=['index.html','styles-core.css','styles-sections.css','styles-responsive.css','script.js','assets/favicon.svg','README.md'];
+for(const file of required) await access(new URL(file,import.meta.url));
+const html=await readFile(new URL('index.html',import.meta.url),'utf8');
+const cssParts=await Promise.all(['styles-core.css','styles-sections.css','styles-responsive.css'].map(f=>readFile(new URL(f,import.meta.url),'utf8')));
+const css=cssParts.join('\n');
+const js=await readFile(new URL('script.js',import.meta.url),'utf8');
+const failures=[];
+if(!html.includes('<main id="main">')) failures.push('semantic main missing');
+if(!html.includes('prefers-reduced-motion')&&!css.includes('prefers-reduced-motion')) failures.push('reduced motion missing');
+if(!html.includes('ZOOMA')) failures.push('ZOOMA concept missing');
+if(/lorem ipsum|TODO|PLACEHOLDER/i.test(html+css+js)) failures.push('placeholder content detected');
+if(html.includes('href="#"')) failures.push('dead hash anchor detected');
+if(!css.includes('overflow-x:hidden')) failures.push('horizontal overflow guard missing');
+if(!html.includes('CONCEPT UI')) failures.push('mock-data disclosure missing');
+if(!html.includes('18+ / KYC / AML')) failures.push('responsible experience section missing');
+const opens=(html.match(/<section\b/g)||[]).length, closes=(html.match(/<\/section>/g)||[]).length;
+if(opens!==closes) failures.push(`section mismatch ${opens}/${closes}`);
+const ids=[...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
+const dup=ids.filter((id,i)=>ids.indexOf(id)!==i); if(dup.length) failures.push(`duplicate ids: ${[...new Set(dup)].join(', ')}`);
+if(failures.length){console.error('BUILD FAILED');failures.forEach(x=>console.error('- '+x));process.exit(1)}
+console.log('ZOOMA / THE NEXT LEVEL');
+console.log(`HTML ${(Buffer.byteLength(html)/1024).toFixed(1)} KB`);
+console.log(`CSS ${(Buffer.byteLength(css)/1024).toFixed(1)} KB`);
+console.log(`JS ${(Buffer.byteLength(js)/1024).toFixed(1)} KB`);
+console.log(`Sections ${opens}`);
+console.log('Static production validation: PASS');
