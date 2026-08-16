@@ -12,3 +12,140 @@
   .soul-stage { overflow: hidden; }
   .final h2 { font-size: clamp(33px, 10.4vw, 54px); }
 }
+
+/* DIGITAL SOUL hero motion: tuned for the new SVG figure */
+.soul-stage {
+  isolation: isolate;
+}
+
+.soul-illustration {
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: filter .45s ease;
+}
+
+.soul-stage.is-awake .soul-illustration {
+  filter: saturate(1.08) brightness(1.035);
+}
+
+.soul-illustration svg > path {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform, filter, opacity;
+}
+
+.soul-illustration svg > path:nth-of-type(1) {
+  filter: drop-shadow(0 0 22px rgba(255,49,88,.22));
+}
+
+.soul-illustration svg > path:nth-of-type(2) {
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 28px rgba(166,232,255,.22));
+}
+
+.soul-illustration svg > rect {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: digitalSoulBeam 6.8s ease-in-out infinite;
+}
+
+.soul-illustration svg > circle:nth-of-type(3) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: digitalSoulHeartbeat 3.15s cubic-bezier(.45,.02,.33,1) infinite;
+}
+
+.soul-illustration svg > circle:nth-of-type(4) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: digitalSoulHeartAura 3.15s cubic-bezier(.45,.02,.33,1) infinite;
+}
+
+.soul-illustration svg > circle:nth-of-type(5) {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: digitalSoulSpiritAura 5.8s ease-in-out infinite alternate;
+}
+
+.soul-illustration svg > g:last-of-type circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: digitalSoulParticle 5.6s ease-in-out infinite alternate;
+}
+
+.soul-illustration svg > g:last-of-type circle:nth-child(2) { animation-delay: -1.2s; animation-duration: 7.2s; }
+.soul-illustration svg > g:last-of-type circle:nth-child(3) { animation-delay: -2.4s; animation-duration: 6.4s; }
+.soul-illustration svg > g:last-of-type circle:nth-child(4) { animation-delay: -.8s; animation-duration: 7.8s; }
+.soul-illustration svg > g:last-of-type circle:nth-child(5) { animation-delay: -3.1s; animation-duration: 6.9s; }
+.soul-illustration svg > g:last-of-type circle:nth-child(6) { animation-delay: -1.7s; animation-duration: 8.3s; }
+
+.soul-core {
+  opacity: .12;
+  animation: digitalSoulCoreEcho 3.15s cubic-bezier(.45,.02,.33,1) infinite;
+}
+
+.soul-halo-red {
+  animation-duration: 11s;
+}
+
+.soul-halo-blue {
+  animation-duration: 13.5s;
+}
+
+@keyframes digitalSoulHeartbeat {
+  0%, 64%, 100% { transform: scale(.93); opacity: .78; }
+  69% { transform: scale(1.16); opacity: 1; }
+  74% { transform: scale(.98); opacity: .88; }
+  79% { transform: scale(1.08); opacity: .96; }
+  86% { transform: scale(.95); opacity: .82; }
+}
+
+@keyframes digitalSoulHeartAura {
+  0%, 64%, 100% { transform: scale(.92); opacity: .17; }
+  70% { transform: scale(1.22); opacity: .34; }
+  79% { transform: scale(1.09); opacity: .26; }
+  88% { transform: scale(.97); opacity: .19; }
+}
+
+@keyframes digitalSoulSpiritAura {
+  from { transform: translate(-2px, 2px) scale(.95); opacity: .08; }
+  to { transform: translate(5px, -7px) scale(1.08); opacity: .17; }
+}
+
+@keyframes digitalSoulCoreEcho {
+  0%, 64%, 100% { transform: translate(-50%,-50%) scale(.72); opacity: .06; }
+  70% { transform: translate(-50%,-50%) scale(1.12); opacity: .17; }
+  80% { transform: translate(-50%,-50%) scale(.84); opacity: .09; }
+}
+
+@keyframes digitalSoulBeam {
+  0%, 100% { opacity: .36; filter: blur(7px); }
+  50% { opacity: .58; filter: blur(5px); }
+}
+
+@keyframes digitalSoulParticle {
+  from { transform: translate(0, 0) scale(.82); opacity: .34; }
+  to { transform: translate(3px, -9px) scale(1.14); opacity: .86; }
+}
+
+@media (max-width: 760px) {
+  .soul-illustration {
+    inset: 5% 0 7% !important;
+  }
+
+  .soul-illustration svg > g:last-of-type circle {
+    animation-duration: 8s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soul-illustration,
+  .soul-illustration *,
+  .soul-core,
+  .soul-halo {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
