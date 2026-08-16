@@ -1,192 +1,72 @@
 (() => {
   'use strict';
-
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(pointer:fine)').matches;
-  const isMobile = window.matchMedia('(max-width:760px)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer:fine)').matches;
+  const mobile = matchMedia('(max-width:680px)').matches;
   const header = document.querySelector('[data-header]');
+  const glow = document.querySelector('[data-cursor-glow]');
   const reveals = [...document.querySelectorAll('.reveal')];
-  const serpent = document.querySelector('#serpentPath');
-  const hero = document.querySelector('.hero');
-  const heroAtmosphere = document.querySelector('.hero-atmosphere');
-  const materialBoard = document.querySelector('.material-board');
-  const browserFrame = document.querySelector('.browser-frame');
-  const processRibbon = document.querySelector('.process-ribbon');
-  const finalTitle = document.querySelector('.final-title');
-
-  document.documentElement.classList.add('motion-ready');
 
   if (header) {
-    const syncHeader = () => header.classList.toggle('scrolled', window.scrollY > 24);
-    syncHeader();
-    window.addEventListener('scroll', syncHeader, { passive: true });
+    const sync = () => header.classList.toggle('scrolled', scrollY > 24);
+    sync();
+    addEventListener('scroll', sync, { passive: true });
   }
 
-  if (!reduceMotion && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.11, rootMargin: '0px 0px -5% 0px' });
-
-    reveals.forEach((node, index) => {
-      node.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 55}ms`);
-      observer.observe(node);
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    reveals.forEach((el, i) => {
+      el.style.transitionDelay = `${Math.min(i % 4, 3) * 60}ms`;
+      io.observe(el);
     });
-  } else {
-    reveals.forEach((node) => node.classList.add('is-visible'));
-  }
+  } else reveals.forEach(el => el.classList.add('visible'));
 
-  if (!reduceMotion && isMobile && 'IntersectionObserver' in window) {
-    const interactiveMobile = [
-      ...document.querySelectorAll('.evidence-card'),
-      ...document.querySelectorAll('.scenario-card'),
-      ...document.querySelectorAll('.role-node'),
-      ...document.querySelectorAll('.scope-row'),
-      ...document.querySelectorAll('.result-grid article')
-    ];
-
-    const mobileObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        entry.target.classList.toggle('mobile-active', entry.isIntersecting && entry.intersectionRatio > 0.42);
-      });
-    }, { threshold: [0.18, 0.42, 0.7], rootMargin: '-8% 0px -12% 0px' });
-
-    interactiveMobile.forEach((node) => mobileObserver.observe(node));
-  }
-
-  if (serpent && !reduceMotion) {
-    const length = serpent.getTotalLength();
-    serpent.style.strokeDasharray = `${length}`;
-    serpent.style.strokeDashoffset = `${length}`;
-
-    const drawSerpent = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-      const progress = Math.min(1, Math.max(0, scrollY / max));
-      serpent.style.strokeDashoffset = `${length * (1 - progress)}`;
-      serpent.style.opacity = `${0.18 + progress * 0.42}`;
-    };
-    drawSerpent();
-    window.addEventListener('scroll', drawSerpent, { passive: true });
-  }
-
-  if (!reduceMotion && finePointer) {
-    document.querySelectorAll('.spotlight-card').forEach((card) => {
-      card.addEventListener('pointermove', (event) => {
-        const rect = card.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const rx = ((y / rect.height) - .5) * -4;
-        const ry = ((x / rect.width) - .5) * 5;
-        card.style.setProperty('--spot-x', `${x}px`);
-        card.style.setProperty('--spot-y', `${y}px`);
-        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-      });
-      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
-    });
-
-    document.querySelectorAll('.magnetic').forEach((button) => {
-      button.addEventListener('pointermove', (event) => {
-        const rect = button.getBoundingClientRect();
-        const x = (event.clientX - rect.left - rect.width / 2) * 0.1;
-        const y = (event.clientY - rect.top - rect.height / 2) * 0.14;
-        button.style.transform = `translate3d(${x}px,${y}px,0) scale(1.025)`;
-      });
-      button.addEventListener('pointerleave', () => { button.style.transform = ''; });
-    });
-
-    if (hero && heroAtmosphere) {
-      hero.addEventListener('pointermove', (event) => {
-        const rect = hero.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width - .5;
-        const y = (event.clientY - rect.top) / rect.height - .5;
-        heroAtmosphere.style.transform = `translate3d(${x * -12}px,${y * -8}px,0) scale(1.015)`;
-        hero.style.setProperty('--hero-x', `${50 + x * 16}%`);
-        hero.style.setProperty('--hero-y', `${42 + y * 14}%`);
-      });
-      hero.addEventListener('pointerleave', () => { heroAtmosphere.style.transform = ''; });
-    }
-  }
-
-  if (!reduceMotion) {
-    const parallaxNodes = [...document.querySelectorAll('[data-parallax]')];
-    let ticking = false;
-
-    const render = () => {
-      const y = window.scrollY;
-      const vh = window.innerHeight || 1;
-
-      parallaxNodes.forEach((node) => {
-        const speed = Number(node.dataset.parallax || 0);
-        const cap = isMobile ? 15 : 28;
-        node.style.transform = `translate3d(0,${Math.max(-cap, Math.min(cap, y * speed))}px,0)`;
-      });
-
-      const shiftByViewport = (node, amount, rotate = 0) => {
-        if (!node) return;
-        const rect = node.getBoundingClientRect();
-        const progress = Math.max(-1, Math.min(1, (vh * .5 - (rect.top + rect.height * .5)) / vh));
-        node.style.transform = `translate3d(0,${progress * amount}px,0) rotate(${rotate + progress * .4}deg)`;
-      };
-
-      shiftByViewport(materialBoard, isMobile ? 10 : 18, 2);
-      shiftByViewport(browserFrame, isMobile ? 8 : 12, 0);
-
-      if (processRibbon) {
-        const rect = processRibbon.getBoundingClientRect();
-        const progress = Math.max(-1, Math.min(1, (vh - rect.top) / (vh + rect.height)));
-        processRibbon.style.setProperty('--ribbon-shift', `${progress * (isMobile ? -16 : -38)}px`);
-      }
-
-      if (finalTitle) {
-        const rect = finalTitle.getBoundingClientRect();
-        const progress = Math.max(-1, Math.min(1, (vh - rect.top) / vh));
-        finalTitle.style.setProperty('--final-track', `${progress * (isMobile ? -0.01 : -0.018)}em`);
-      }
-
-      if (isMobile && heroAtmosphere && hero) {
-        const heroRect = hero.getBoundingClientRect();
-        const progress = Math.max(-1, Math.min(1, -heroRect.top / Math.max(1, heroRect.height)));
-        heroAtmosphere.style.transform = `translate3d(0,${progress * 12}px,0) scale(${1 + progress * .015})`;
-        hero.style.setProperty('--hero-y', `${36 + progress * 10}%`);
-      }
-
-      ticking = false;
-    };
-
-    const requestRender = () => {
-      if (!ticking) {
-        requestAnimationFrame(render);
-        ticking = true;
-      }
-    };
-
-    render();
-    window.addEventListener('scroll', requestRender, { passive: true });
-    window.addEventListener('resize', requestRender, { passive: true });
-  }
-
-  document.querySelectorAll('a[href^="#"]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const id = link.getAttribute('href');
-      if (!id || id === '#') return;
-      const target = document.querySelector(id);
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
       if (!target) return;
-      event.preventDefault();
-      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      history.replaceState(null, '', id);
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     });
   });
 
-  const scenarioTrack = document.querySelector('.scenario-track');
-  if (scenarioTrack) {
-    scenarioTrack.addEventListener('keydown', (event) => {
-      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-      const direction = event.key === 'ArrowRight' ? 1 : -1;
-      scenarioTrack.scrollBy({ left: direction * 320, behavior: reduceMotion ? 'auto' : 'smooth' });
-    });
+  if (!reduce && fine && glow) {
+    let x = innerWidth * .7, y = innerHeight * .3, tx = x, ty = y;
+    addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+    const draw = () => {
+      x += (tx - x) * .09; y += (ty - y) * .09;
+      glow.style.left = `${x}px`; glow.style.top = `${y}px`;
+      requestAnimationFrame(draw);
+    };
+    draw();
+  } else if (glow) glow.style.display = 'none';
+
+  if (!reduce) {
+    const heroPhoto = document.querySelector('.hero-photo');
+    const heroTitle = document.querySelector('.hero h1');
+    const visuals = [...document.querySelectorAll('.visual')];
+    let ticking = false;
+    const render = () => {
+      const y = scrollY, vh = innerHeight || 1;
+      if (heroPhoto) heroPhoto.style.transform = `translate3d(0,${Math.min(24, y * .025)}px,0) scale(${1 + Math.min(.035, y / 30000)})`;
+      if (heroTitle && !mobile) heroTitle.style.transform = `translate3d(0,${Math.min(20, y * .018)}px,0)`;
+      visuals.forEach((card, i) => {
+        const r = card.getBoundingClientRect();
+        const p = Math.max(-1, Math.min(1, (vh * .5 - (r.top + r.height * .5)) / vh));
+        card.style.setProperty('--heat-shift', `${p * (i % 2 ? 8 : -8)}px`);
+      });
+      ticking = false;
+    };
+    const request = () => { if (!ticking) { requestAnimationFrame(render); ticking = true; } };
+    render();
+    addEventListener('scroll', request, { passive: true });
+    addEventListener('resize', request, { passive: true });
   }
 })();
