@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090b0c" />
+  <title>ZOOMA — Casino Reimagined</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="ZOOMA home">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span>ZOOMA</span>
+      </a>
+      <nav class="main-nav" aria-label="Основная навигация">
+        <a class="nav-item active" href="#lobby"><span class="ico">◉</span><span>Casino</span></a>
+        <a class="nav-item" href="#originals"><span class="ico">◆</span><span>Originals</span></a>
+        <a class="nav-item" href="#live"><span class="ico">●</span><span>Live</span><em>32</em></a>
+        <a class="nav-item" href="#tournaments"><span class="ico">✦</span><span>Турниры</span></a>
+        <a class="nav-item" href="#rewards"><span class="ico">✳</span><span>Бонусы</span></a>
+      </nav>
+      <div class="nav-section">
+        <span class="nav-caption">Мои игры</span>
+        <button class="nav-item button-like"><span class="ico">♡</span><span>Избранное</span></button>
+        <button class="nav-item button-like"><span class="ico">↺</span><span>История</span></button>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="online-pill"><span class="online-dot"></span> 1 842 онлайн</div>
+        <button class="nav-item button-like"><span class="ico">?</span><span>Поддержка</span></button>
+        <button class="nav-item button-like"><span class="ico">↗</span><span>Telegram</span></button>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Меню">☰</button>
+        <div class="mobile-brand">ZOOMA</div>
+        <div class="top-search-wrap">
+          <label class="search">
+            <span>⌕</span>
+            <input id="globalSearch" type="search" placeholder="Игра, провайдер, категория…" autocomplete="off" />
+            <kbd>/</kbd>
+          </label>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" title="Уведомления">◌<span class="notif-dot"></span></button>
+          <button class="btn ghost">Войти</button>
+          <button class="btn primary">Создать аккаунт</button>
+        </div>
+      </header>
+      <section class="content" id="lobby">
+        <div class="hero-grid">
+          <article class="hero-card hero-main">
+            <div class="orb orb-a"></div><div class="orb orb-b"></div>
+            <div class="hero-content">
+              <span class="eyebrow"><i class="pulse"></i> ZOOMA ORIGINAL</span>
+              <h1>Играй<br><span>на скорости.</span></h1>
+              <p>Новый lobby: быстрее поиск, меньше шума, больше игры.</p>
+              <div class="hero-actions">
+                <button class="btn primary large">Играть сейчас <span>↗</span></button>
+                <button class="btn soft large">Смотреть игры</button>
+              </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="z-ring ring-1"></div>
+              <div class="z-ring ring-2"></div>
+              <div class="z-ring ring-3"></div>
+              <div class="hero-z">Z</div>
+              <div class="floating-chip chip-1">x25</div>
+              <div class="floating-chip chip-2">+7.42</div>
+              <div class="floating-chip chip-3">LIVE</div>
+            </div>
+          </article>
+          <article class="mini-card tournament-card">
+            <div class="mini-top"><span class="eyebrow">SLOTS RACE #6</span><span class="live-badge">LIVE</span></div>
+            <div class="prize">₽6 666 666</div>
+            <div class="muted">Призовой фонд</div>
+            <div class="progress-row"><span>До финиша</span><strong>03:18:42</strong></div>
+            <div class="progress"><i style="width: 68%"></i></div>
+            <button class="text-link">Открыть турнир <span>↗</span></button>
+          </article>
+          <article class="mini-card cashback-card">
+            <div class="cashback-art"><span>12%</span></div>
+            <div>
+              <span class="eyebrow">ZOOMA CLUB</span>
+              <h3>Cashback<br>без отыгрыша</h3>
+              <button class="text-link">Мои награды <span>↗</span></button>
+            </div>
+          </article>
+        </div>
+        <section class="quick-row" id="originals">
+          <button class="quick-card q-wheel"><span class="q-icon">◐</span><span><b>Wheel</b><small>Моментальная игра</small></span><i>↗</i></button>
+          <button class="quick-card q-mines"><span class="q-icon">✣</span><span><b>Mines</b><small>Новая версия</small></span><em>NEW</em><i>↗</i></button>
+          <button class="quick-card q-classic"><span class="q-icon">◇</span><span><b>Classic</b><small>Zooma original</small></span><i>↗</i></button>
+          <button class="quick-card q-duels"><span class="q-icon">⚡</span><span><b>Duels</b><small>1 на 1</small></span><i>↗</i></button>
+          <button class="quick-card q-trains"><span class="q-icon">➤</span><span><b>Trains!</b><small>Денежные поезда</small></span><em>HOT</em><i>↗</i></button>
+        </section>
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">ДЛЯ ТЕБЯ</span>
+            <h2>Играть сейчас</h2>
+          </div>
+          <div class="view-actions">
+            <button class="chip active" data-filter="all">Все</button>
+            <button class="chip" data-filter="hot">Популярные</button>
+            <button class="chip" data-filter="new">Новые</button>
+            <button class="chip" data-filter="live">Live</button>
+          </div>
+        </div>
+        <section class="game-grid" id="gameGrid"></section>
+        <div class="split-sections">
+          <section class="activity-panel" id="tournaments">
+            <div class="section-head compact">
+              <div><span class="eyebrow">СОБЫТИЯ</span><h2>В игре прямо сейчас</h2></div>
+              <button class="text-link">Все активности <span>↗</span></button>
+            </div>
+            <div class="activity-list">
+              <article class="activity-item">
+                <div class="activity-icon purple">✦</div>
+                <div><b>Wheel Day</b><small>Турнир • 476 игроков</small></div>
+                <strong>₽10 000</strong><span class="live-badge">LIVE</span>
+              </article>
+              <article class="activity-item">
+                <div class="activity-icon green">☂</div>
+                <div><b>Денежный дождь</b><small>В чате • через 04:12</small></div>
+                <strong>₽25 000</strong><span class="status-soon">SOON</span>
+              </article>
+              <article class="activity-item">
+                <div class="activity-icon cyan">➤</div>
+                <div><b>Money Train #931</b><small>Билетов осталось: 84</small></div>
+                <strong>₽50 000</strong><span class="status-hot">HOT</span>
+              </article>
+            </div>
+          </section>
+          <aside class="club-panel" id="rewards">
+            <span class="eyebrow">ZOOMA CLUB</span>
+            <h2>Игра<br>возвращает.</h2>
+            <p>Cashback до 12%, 200 фриспинов и персональные уровни — в одном экране.</p>
+            <div class="club-level"><span>LEVEL 07</span><strong>4 280 XP</strong></div>
+            <div class="progress"><i style="width: 74%"></i></div>
+            <button class="btn soft full">Открыть Zooma Club</button>
+          </aside>
+        </div>
+        <section class="providers-section">
+          <div class="section-head">
+            <div><span class="eyebrow">КАТАЛОГ</span><h2>Провайдеры без бесконечного списка</h2></div>
+            <label class="provider-search"><span>⌕</span><input id="providerSearch" placeholder="Найти провайдера"></label>
+          </div>
+          <div class="provider-chips" id="providerChips"></div>
+          <button class="btn soft full providers-all" id="providersAll">Показать все провайдеры</button>
+        </section>
+      </section>
+      <footer class="footer">
+        <div><div class="brand footer-brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>ZOOMA</span></div><p>Игровой интерфейс нового поколения.</p></div>
+        <div class="footer-links"><a href="#">AML Policy</a><a href="#">KYC Policy</a><a href="#">Terms</a><a href="#">Responsible Gambling</a></div>
+        <div class="license"><b>18+</b><span>© 2026 Zooma Casino. Demo redesign concept.</span></div>
+      </footer>
+    </main>
+    <nav class="mobile-nav" aria-label="Мобильная навигация">
+      <a href="#lobby" class="active"><span>◉</span><small>Casino</small></a>
+      <a href="#originals"><span>◆</span><small>Originals</small></a>
+      <button class="mobile-play"><span>+</span></button>
+      <a href="#tournaments"><span>✦</span><small>События</small></a>
+      <a href="#rewards"><span>◎</span><small>Профиль</small></a>
+    </nav>
+  </div>
+  <div class="toast" id="toast">Добавлено в избранное</div>
+  <script src="app.js"></script>
+</body>
+</html>
