@@ -2,172 +2,150 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#090b0c" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#07090a" />
+  <meta name="description" content="ZOOMA Casino — интерактивный redesign prototype" />
   <title>ZOOMA — Casino Reimagined</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
   <div class="noise" aria-hidden="true"></div>
+
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <a class="brand" href="#" aria-label="ZOOMA home">
+      <a class="brand route-link" href="#casino" data-route="casino" aria-label="ZOOMA Casino">
         <span class="brand-mark"><i></i><i></i><i></i></span>
-        <span>ZOOMA</span>
+        <span class="brand-name">ZOOMA</span>
       </a>
-      <nav class="main-nav" aria-label="Основная навигация">
-        <a class="nav-item active" href="#lobby"><span class="ico">◉</span><span>Casino</span></a>
-        <a class="nav-item" href="#originals"><span class="ico">◆</span><span>Originals</span></a>
-        <a class="nav-item" href="#live"><span class="ico">●</span><span>Live</span><em>32</em></a>
-        <a class="nav-item" href="#tournaments"><span class="ico">✦</span><span>Турниры</span></a>
-        <a class="nav-item" href="#rewards"><span class="ico">✳</span><span>Бонусы</span></a>
+
+      <nav class="nav-group primary-nav" aria-label="Игровые разделы">
+        <a class="nav-item route-link active" href="#casino" data-route="casino"><span class="nav-icon">◉</span><span>Casino</span></a>
+        <div class="nav-label">Games</div>
+        <a class="nav-item route-link" href="#wheel" data-route="wheel"><span class="nav-icon">◐</span><span>Wheel</span><em>LIVE</em></a>
+        <a class="nav-item route-link" href="#mines" data-route="mines"><span class="nav-icon">✣</span><span>Mines</span><em class="new">NEW</em></a>
+        <a class="nav-item route-link" href="#classic" data-route="classic"><span class="nav-icon">◇</span><span>Classic</span></a>
+        <a class="nav-item route-link" href="#duels" data-route="duels"><span class="nav-icon">⚡</span><span>Duels</span></a>
+        <a class="nav-item route-link" href="#tournaments" data-route="tournaments"><span class="nav-icon">✦</span><span>Турниры</span></a>
+        <a class="nav-item route-link" href="#trains" data-route="trains"><span class="nav-icon">➤</span><span>The Trains!</span><em class="hot">HOT</em></a>
       </nav>
-      <div class="nav-section">
-        <span class="nav-caption">Мои игры</span>
-        <button class="nav-item button-like"><span class="ico">♡</span><span>Избранное</span></button>
-        <button class="nav-item button-like"><span class="ico">↺</span><span>История</span></button>
-      </div>
+
+      <nav class="nav-group secondary-nav" aria-label="Сервисные разделы">
+        <a class="nav-item route-link" href="#promo" data-route="promo"><span class="nav-icon">%</span><span>Промокод</span></a>
+        <a class="nav-item route-link" href="#history" data-route="history"><span class="nav-icon">↺</span><span>История</span></a>
+        <a class="nav-item route-link" href="#help" data-route="help"><span class="nav-icon">?</span><span>Вопросы и ответы</span></a>
+      </nav>
+
       <div class="sidebar-bottom">
-        <div class="online-pill"><span class="online-dot"></span> 1 842 онлайн</div>
-        <button class="nav-item button-like"><span class="ico">?</span><span>Поддержка</span></button>
-        <button class="nav-item button-like"><span class="ico">↗</span><span>Telegram</span></button>
+        <div class="payment-shortcuts">
+          <span class="nav-label">Deposit</span>
+          <div class="payment-row">
+            <button class="mini-action" data-modal="deposit">Пополнить</button>
+            <button class="mini-action" data-modal="withdraw">Вывести</button>
+          </div>
+        </div>
+        <button class="nav-item button-like" id="soundToggle"><span class="nav-icon">♪</span><span>Звук</span><small id="soundState">ON</small></button>
+        <a class="nav-item" href="https://t.me/" target="_blank" rel="noreferrer"><span class="nav-icon">↗</span><span>Telegram</span></a>
+        <button class="nav-item button-like" data-modal="support"><span class="nav-icon">◌</span><span>Поддержка</span></button>
+        <button class="nav-item button-like login-nav" data-modal="login"><span class="nav-icon">→</span><span>ВОЙТИ</span></button>
       </div>
     </aside>
-    <main class="main">
+
+    <section class="workspace">
       <header class="topbar">
-        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Меню">☰</button>
-        <div class="mobile-brand">ZOOMA</div>
-        <div class="top-search-wrap">
-          <label class="search">
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Открыть меню">☰</button>
+        <a class="mobile-brand route-link" href="#casino" data-route="casino">ZOOMA</a>
+
+        <div class="breadcrumb" id="breadcrumb">
+          <span class="crumb-muted">ZOOMA</span><span>/</span><strong>Casino</strong>
+        </div>
+
+        <div class="global-search-wrap">
+          <label class="global-search">
             <span>⌕</span>
-            <input id="globalSearch" type="search" placeholder="Игра, провайдер, категория…" autocomplete="off" />
+            <input id="globalSearch" type="search" placeholder="Игра, провайдер, раздел…" autocomplete="off" />
             <kbd>/</kbd>
           </label>
           <div class="search-results" id="searchResults"></div>
         </div>
+
         <div class="top-actions">
-          <button class="icon-btn" title="Уведомления">◌<span class="notif-dot"></span></button>
-          <button class="btn ghost">Войти</button>
-          <button class="btn primary">Создать аккаунт</button>
+          <button class="icon-btn chat-btn" id="chatToggle" aria-label="Открыть чат">◍<span class="status-dot"></span></button>
+          <button class="btn ghost hide-mobile" data-modal="login">Войти</button>
+          <button class="btn primary" data-modal="register">Создать аккаунт</button>
         </div>
       </header>
-      <section class="content" id="lobby">
-        <div class="hero-grid">
-          <article class="hero-card hero-main">
-            <div class="orb orb-a"></div><div class="orb orb-b"></div>
-            <div class="hero-content">
-              <span class="eyebrow"><i class="pulse"></i> ZOOMA ORIGINAL</span>
-              <h1>Играй<br><span>на скорости.</span></h1>
-              <p>Новый lobby: быстрее поиск, меньше шума, больше игры.</p>
-              <div class="hero-actions">
-                <button class="btn primary large">Играть сейчас <span>↗</span></button>
-                <button class="btn soft large">Смотреть игры</button>
-              </div>
-            </div>
-            <div class="hero-visual" aria-hidden="true">
-              <div class="z-ring ring-1"></div>
-              <div class="z-ring ring-2"></div>
-              <div class="z-ring ring-3"></div>
-              <div class="hero-z">Z</div>
-              <div class="floating-chip chip-1">x25</div>
-              <div class="floating-chip chip-2">+7.42</div>
-              <div class="floating-chip chip-3">LIVE</div>
-            </div>
-          </article>
-          <article class="mini-card tournament-card">
-            <div class="mini-top"><span class="eyebrow">SLOTS RACE #6</span><span class="live-badge">LIVE</span></div>
-            <div class="prize">₽6 666 666</div>
-            <div class="muted">Призовой фонд</div>
-            <div class="progress-row"><span>До финиша</span><strong>03:18:42</strong></div>
-            <div class="progress"><i style="width: 68%"></i></div>
-            <button class="text-link">Открыть турнир <span>↗</span></button>
-          </article>
-          <article class="mini-card cashback-card">
-            <div class="cashback-art"><span>12%</span></div>
-            <div>
-              <span class="eyebrow">ZOOMA CLUB</span>
-              <h3>Cashback<br>без отыгрыша</h3>
-              <button class="text-link">Мои награды <span>↗</span></button>
-            </div>
-          </article>
-        </div>
-        <section class="quick-row" id="originals">
-          <button class="quick-card q-wheel"><span class="q-icon">◐</span><span><b>Wheel</b><small>Моментальная игра</small></span><i>↗</i></button>
-          <button class="quick-card q-mines"><span class="q-icon">✣</span><span><b>Mines</b><small>Новая версия</small></span><em>NEW</em><i>↗</i></button>
-          <button class="quick-card q-classic"><span class="q-icon">◇</span><span><b>Classic</b><small>Zooma original</small></span><i>↗</i></button>
-          <button class="quick-card q-duels"><span class="q-icon">⚡</span><span><b>Duels</b><small>1 на 1</small></span><i>↗</i></button>
-          <button class="quick-card q-trains"><span class="q-icon">➤</span><span><b>Trains!</b><small>Денежные поезда</small></span><em>HOT</em><i>↗</i></button>
-        </section>
-        <div class="section-head">
-          <div>
-            <span class="eyebrow">ДЛЯ ТЕБЯ</span>
-            <h2>Играть сейчас</h2>
-          </div>
-          <div class="view-actions">
-            <button class="chip active" data-filter="all">Все</button>
-            <button class="chip" data-filter="hot">Популярные</button>
-            <button class="chip" data-filter="new">Новые</button>
-            <button class="chip" data-filter="live">Live</button>
-          </div>
-        </div>
-        <section class="game-grid" id="gameGrid"></section>
-        <div class="split-sections">
-          <section class="activity-panel" id="tournaments">
-            <div class="section-head compact">
-              <div><span class="eyebrow">СОБЫТИЯ</span><h2>В игре прямо сейчас</h2></div>
-              <button class="text-link">Все активности <span>↗</span></button>
-            </div>
-            <div class="activity-list">
-              <article class="activity-item">
-                <div class="activity-icon purple">✦</div>
-                <div><b>Wheel Day</b><small>Турнир • 476 игроков</small></div>
-                <strong>₽10 000</strong><span class="live-badge">LIVE</span>
-              </article>
-              <article class="activity-item">
-                <div class="activity-icon green">☂</div>
-                <div><b>Денежный дождь</b><small>В чате • через 04:12</small></div>
-                <strong>₽25 000</strong><span class="status-soon">SOON</span>
-              </article>
-              <article class="activity-item">
-                <div class="activity-icon cyan">➤</div>
-                <div><b>Money Train #931</b><small>Билетов осталось: 84</small></div>
-                <strong>₽50 000</strong><span class="status-hot">HOT</span>
-              </article>
-            </div>
-          </section>
-          <aside class="club-panel" id="rewards">
-            <span class="eyebrow">ZOOMA CLUB</span>
-            <h2>Игра<br>возвращает.</h2>
-            <p>Cashback до 12%, 200 фриспинов и персональные уровни — в одном экране.</p>
-            <div class="club-level"><span>LEVEL 07</span><strong>4 280 XP</strong></div>
-            <div class="progress"><i style="width: 74%"></i></div>
-            <button class="btn soft full">Открыть Zooma Club</button>
-          </aside>
-        </div>
-        <section class="providers-section">
-          <div class="section-head">
-            <div><span class="eyebrow">КАТАЛОГ</span><h2>Провайдеры без бесконечного списка</h2></div>
-            <label class="provider-search"><span>⌕</span><input id="providerSearch" placeholder="Найти провайдера"></label>
-          </div>
-          <div class="provider-chips" id="providerChips"></div>
-          <button class="btn soft full providers-all" id="providersAll">Показать все провайдеры</button>
-        </section>
-      </section>
+
+      <div class="ticker" aria-label="Текущие активности">
+        <a href="#tournaments" data-route="tournaments" class="route-link ticker-item"><span>✦</span><b>SLOTS RACE #5</b><strong>5 000 000 ₽</strong></a>
+        <a href="#tournaments" data-route="tournaments" class="route-link ticker-item"><span>✦</span><b>SLOTS TOURNAMENT</b><strong>500 000 ₽</strong></a>
+        <a href="#tournaments" data-route="tournaments" class="route-link ticker-item"><span>◐</span><b>WHEEL DAY</b><strong>10 000 ₽</strong></a>
+      </div>
+
+      <main id="pageView" class="page-view" tabindex="-1"></main>
+
       <footer class="footer">
-        <div><div class="brand footer-brand"><span class="brand-mark"><i></i><i></i><i></i></span><span>ZOOMA</span></div><p>Игровой интерфейс нового поколения.</p></div>
-        <div class="footer-links"><a href="#">AML Policy</a><a href="#">KYC Policy</a><a href="#">Terms</a><a href="#">Responsible Gambling</a></div>
-        <div class="license"><b>18+</b><span>© 2026 Zooma Casino. Demo redesign concept.</span></div>
+        <div class="footer-branding">
+          <div class="brand footer-logo"><span class="brand-mark"><i></i><i></i><i></i></span><span>ZOOMA</span></div>
+          <p>Интерактивный redesign-концепт интерфейса казино.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#help" class="route-link" data-route="help">AML Policy</a>
+          <a href="#help" class="route-link" data-route="help">KYC Policy</a>
+          <a href="#help" class="route-link" data-route="help">Terms & Conditions</a>
+          <a href="#help" class="route-link" data-route="help">Responsible Gambling</a>
+        </div>
+        <div class="license"><b>18+</b><span>© 2026 Zooma Casino · redesign demo</span></div>
       </footer>
-    </main>
+    </section>
+
+    <aside class="chat-drawer" id="chatDrawer" aria-label="Чат">
+      <div class="chat-head">
+        <div><span class="online-dot"></span><strong>Чат</strong><small>1 842 онлайн</small></div>
+        <button class="icon-btn" id="chatClose" aria-label="Закрыть чат">×</button>
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="rain-card">
+        <div><span>☂</span><strong>Денежный дождь</strong></div>
+        <small>следующий через</small><b>04:12</b>
+      </div>
+      <div class="chat-login">
+        <p>Войдите, чтобы писать в чат</p>
+        <button class="btn primary full" data-modal="login">ВОЙТИ</button>
+      </div>
+    </aside>
+
     <nav class="mobile-nav" aria-label="Мобильная навигация">
-      <a href="#lobby" class="active"><span>◉</span><small>Casino</small></a>
-      <a href="#originals"><span>◆</span><small>Originals</small></a>
-      <button class="mobile-play"><span>+</span></button>
-      <a href="#tournaments"><span>✦</span><small>События</small></a>
-      <a href="#rewards"><span>◎</span><small>Профиль</small></a>
+      <a class="route-link active" href="#casino" data-route="casino"><span>◉</span><small>Casino</small></a>
+      <button id="mobileGames"><span>◆</span><small>Games</small></button>
+      <button class="mobile-deposit" data-modal="deposit"><span>+</span><small>Deposit</small></button>
+      <a class="route-link" href="#tournaments" data-route="tournaments"><span>✦</span><small>События</small></a>
+      <button data-modal="login"><span>◎</span><small>Профиль</small></button>
     </nav>
   </div>
-  <div class="toast" id="toast">Добавлено в избранное</div>
+
+  <div class="mobile-games-sheet" id="mobileGamesSheet" aria-hidden="true">
+    <div class="sheet-card">
+      <div class="sheet-head"><strong>Games</strong><button id="mobileGamesClose">×</button></div>
+      <div class="sheet-grid">
+        <a href="#wheel" data-route="wheel" class="route-link"><span>◐</span><b>Wheel</b></a>
+        <a href="#mines" data-route="mines" class="route-link"><span>✣</span><b>Mines</b></a>
+        <a href="#classic" data-route="classic" class="route-link"><span>◇</span><b>Classic</b></a>
+        <a href="#duels" data-route="duels" class="route-link"><span>⚡</span><b>Duels</b></a>
+        <a href="#trains" data-route="trains" class="route-link"><span>➤</span><b>Trains!</b></a>
+        <a href="#promo" data-route="promo" class="route-link"><span>%</span><b>Промокод</b></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-layer" id="modalLayer" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal" id="modalContent" role="dialog" aria-modal="true"></section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
   <script src="app.js"></script>
 </body>
 </html>
