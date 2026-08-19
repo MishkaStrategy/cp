@@ -2,129 +2,81 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#100d17">
-  <meta name="description" content="ZOOMA Casino — независимый redesign prototype исходного casino lobby">
-  <title>ZOOMA — Casino Redesign</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0a0b10">
+  <meta name="description" content="ZOOMA — новый независимый redesign исходного casino lobby">
+  <title>ZOOMA — Rebuilt</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#view">Перейти к содержимому</a>
+  <a class="skip" href="#view">К содержимому</a>
 
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar" aria-label="Основная навигация">
-      <a class="logo route-link" href="#/casino" data-route="casino" aria-label="ZOOMA — Casino">
-        <span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span>ZOOMA</span>
+  <div class="app">
+    <header class="command-bar">
+      <a class="wordmark route-link" href="#/casino" data-route="casino" aria-label="ZOOMA — Casino">
+        <span class="wordmark-orb" aria-hidden="true"></span><b>ZOOMA</b>
       </a>
 
-      <nav class="side-nav" aria-label="Игровые разделы">
-        <a class="side-item route-link" href="#/casino" data-route="casino"><span class="side-icon">◉</span><b>Casino</b></a>
-        <div class="side-caption">Games</div>
-        <a class="side-item route-link" href="#/wheel" data-route="wheel"><span class="side-icon">◐</span><b>Wheel</b><em>LIVE</em></a>
-        <a class="side-item route-link" href="#/mines" data-route="mines"><span class="side-icon">✣</span><b>Mines</b><em class="new">NEW</em></a>
-        <a class="side-item route-link" href="#/classic" data-route="classic"><span class="side-icon">◇</span><b>Classic</b></a>
-        <a class="side-item route-link" href="#/duels" data-route="duels"><span class="side-icon">⚡</span><b>Duels</b></a>
-        <a class="side-item route-link" href="#/tournaments" data-route="tournaments"><span class="side-icon">✦</span><b>Турниры</b></a>
-        <a class="side-item route-link" href="#/trains" data-route="trains"><span class="side-icon">➤</span><b>The Trains!</b><em class="hot">HOT</em></a>
+      <nav class="command-nav" aria-label="Основные разделы">
+        <a class="route-link" href="#/casino" data-route="casino">Casino</a>
+        <a class="route-link" href="#/wheel" data-route="wheel">Wheel</a>
+        <a class="route-link" href="#/mines" data-route="mines">Mines</a>
+        <a class="route-link" href="#/classic" data-route="classic">Classic</a>
+        <a class="route-link" href="#/duels" data-route="duels">Duels</a>
+        <a class="route-link" href="#/trains" data-route="trains">Trains</a>
       </nav>
 
-      <nav class="side-nav service-nav" aria-label="Сервисные разделы">
-        <a class="side-item route-link" href="#/promo" data-route="promo"><span class="side-icon">%</span><b>Промокод</b></a>
-        <a class="side-item route-link" href="#/history" data-route="history"><span class="side-icon">↺</span><b>История</b></a>
-        <a class="side-item route-link" href="#/help" data-route="help"><span class="side-icon">?</span><b>Вопросы и ответы</b></a>
+      <div class="command-actions">
+        <button class="icon-action" id="openSearch" type="button" aria-label="Открыть поиск">⌕</button>
+        <a class="event-pill route-link" href="#/tournaments" data-route="tournaments"><span></span> Events</a>
+        <button class="avatar-action" id="openAccount" type="button" aria-label="Открыть аккаунт">Z</button>
+      </div>
+    </header>
+
+    <div class="subnav-wrap">
+      <nav class="subnav" aria-label="Сервисные разделы">
+        <a class="route-link" href="#/promo" data-route="promo">Промокод</a>
+        <a class="route-link" href="#/history" data-route="history">История</a>
+        <a class="route-link" href="#/help" data-route="help">FAQ</a>
+        <button type="button" id="providerQuick">Провайдеры</button>
       </nav>
-
-      <div class="side-bottom">
-        <div class="side-caption">Deposit</div>
-        <div class="deposit-row">
-          <button class="small-btn" type="button" data-demo-action="deposit">Пополнить</button>
-          <button class="small-btn" type="button" data-demo-action="withdraw">Вывести</button>
-        </div>
-        <button class="side-item button-reset" type="button" id="soundToggle"><span class="side-icon">♪</span><b>Звук</b><small id="soundState">ON</small></button>
-        <a class="side-item" href="https://t.me/" target="_blank" rel="noreferrer"><span class="side-icon">↗</span><b>Telegram</b></a>
-        <button class="side-item button-reset" type="button" data-modal="support"><span class="side-icon">◌</span><b>Поддержка</b></button>
-      </div>
-    </aside>
-
-    <div class="content-shell">
-      <header class="topbar">
-        <button class="icon-btn mobile-menu" id="menuBtn" type="button" aria-label="Открыть меню">☰</button>
-        <a class="mobile-logo route-link" href="#/casino" data-route="casino">ZOOMA</a>
-
-        <div class="crumbs" id="crumbs"><span>ZOOMA</span><i>/</i><strong>Casino</strong></div>
-
-        <div class="search-box-wrap">
-          <label class="search-box" for="globalSearch">
-            <span aria-hidden="true">⌕</span>
-            <input id="globalSearch" type="search" placeholder="Игра, провайдер, раздел…" autocomplete="off">
-            <kbd>/</kbd>
-          </label>
-          <div class="search-popover" id="searchPopover" aria-live="polite"></div>
-        </div>
-
-        <div class="top-actions">
-          <button class="icon-btn" id="chatToggle" type="button" aria-label="Открыть чат">◍</button>
-          <button class="btn ghost hide-mobile" type="button" data-modal="login">Войти</button>
-          <button class="btn primary" type="button" data-modal="register">Создать аккаунт</button>
-        </div>
-      </header>
-
-      <div class="event-strip" aria-label="События">
-        <a class="route-link" href="#/tournaments" data-route="tournaments"><span>✦</span><b>SLOTS RACE</b><small>турнир</small></a>
-        <a class="route-link" href="#/trains" data-route="trains"><span>➤</span><b>THE TRAINS!</b><small>новое</small></a>
-        <a class="route-link" href="#/promo" data-route="promo"><span>%</span><b>PROMO</b><small>бонусы</small></a>
-      </div>
-
-      <main class="page-view" id="view" tabindex="-1"></main>
-
-      <footer class="footer">
-        <div>
-          <div class="footer-brand"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>ZOOMA</b></div>
-          <p>Новый независимый redesign исходного casino lobby. Демонстрационный интерфейс.</p>
-        </div>
-        <nav aria-label="Документы">
-          <a href="#/help" class="route-link" data-route="help">AML Policy</a>
-          <a href="#/help" class="route-link" data-route="help">KYC Policy</a>
-          <a href="#/help" class="route-link" data-route="help">Terms & Conditions</a>
-          <a href="#/help" class="route-link" data-route="help">Responsible Gambling</a>
-        </nav>
-        <div class="footer-meta"><b>18+</b><span>Redesign prototype · 2026</span></div>
-      </footer>
+      <div class="status-line"><span class="live-dot"></span><b id="routeLabel">CASINO</b><small>interactive prototype</small></div>
     </div>
 
-    <aside class="chat-drawer" id="chatDrawer" aria-label="Чат">
-      <div class="chat-head"><div><span class="online-dot"></span><strong>Чат</strong><small>демо</small></div><button class="icon-btn" id="chatClose" type="button" aria-label="Закрыть чат">×</button></div>
-      <div class="chat-list" id="chatList"></div>
-      <div class="chat-lock"><p>Войдите, чтобы писать в чат</p><button class="btn primary full" type="button" data-modal="login">ВОЙТИ</button></div>
-    </aside>
+    <main id="view" tabindex="-1"></main>
+
+    <footer class="footer">
+      <div><b>ZOOMA</b><p>Новый интерфейс, собранный с нуля по структуре исходного продукта.</p></div>
+      <nav aria-label="Документы">
+        <button type="button" data-doc="AML Policy">AML</button>
+        <button type="button" data-doc="KYC Policy">KYC</button>
+        <button type="button" data-doc="Terms & Conditions">Terms</button>
+        <button type="button" data-doc="Responsible Gambling">Responsible Play</button>
+      </nav>
+      <div class="footer-meta"><span>18+</span><small>UI prototype · 2026</small></div>
+    </footer>
   </div>
 
-  <nav class="mobile-nav" aria-label="Мобильная навигация">
+  <nav class="mobile-dock" aria-label="Мобильная навигация">
     <a class="route-link" href="#/casino" data-route="casino"><span>◉</span><small>Casino</small></a>
-    <button type="button" id="mobileGames"><span>◆</span><small>Games</small></button>
-    <button type="button" class="mobile-main" data-demo-action="deposit"><span>+</span><small>Deposit</small></button>
-    <a class="route-link" href="#/tournaments" data-route="tournaments"><span>✦</span><small>События</small></a>
-    <button type="button" data-modal="login"><span>◎</span><small>Профиль</small></button>
+    <button id="mobileExplore" type="button"><span>◆</span><small>Explore</small></button>
+    <button id="mobileSearch" class="dock-main" type="button"><span>⌕</span><small>Search</small></button>
+    <a class="route-link" href="#/tournaments" data-route="tournaments"><span>✦</span><small>Events</small></a>
+    <button id="mobileAccount" type="button"><span>◎</span><small>Account</small></button>
   </nav>
 
-  <div class="mobile-sheet" id="mobileSheet" aria-hidden="true">
-    <div class="sheet-card">
-      <div class="sheet-head"><strong>Games</strong><button type="button" id="sheetClose" aria-label="Закрыть">×</button></div>
-      <div class="sheet-grid">
-        <a class="route-link" href="#/wheel" data-route="wheel"><span>◐</span><b>Wheel</b></a>
-        <a class="route-link" href="#/mines" data-route="mines"><span>✣</span><b>Mines</b></a>
-        <a class="route-link" href="#/classic" data-route="classic"><span>◇</span><b>Classic</b></a>
-        <a class="route-link" href="#/duels" data-route="duels"><span>⚡</span><b>Duels</b></a>
-        <a class="route-link" href="#/trains" data-route="trains"><span>➤</span><b>Trains!</b></a>
-        <a class="route-link" href="#/promo" data-route="promo"><span>%</span><b>Промокод</b></a>
-      </div>
-    </div>
-  </div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <button class="drawer-backdrop" type="button" data-drawer-close aria-label="Закрыть"></button>
+    <section class="drawer-panel" id="drawerPanel" aria-live="polite"></section>
+  </aside>
 
-  <div class="modal-layer" id="modalLayer" aria-hidden="true">
-    <button class="modal-backdrop" type="button" data-close-modal aria-label="Закрыть окно"></button>
-    <section class="modal" id="modalContent" role="dialog" aria-modal="true" aria-live="polite"></section>
+  <div class="palette" id="palette" aria-hidden="true">
+    <button class="palette-backdrop" type="button" data-palette-close aria-label="Закрыть поиск"></button>
+    <section class="palette-card" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+      <div class="palette-head"><div><small>GLOBAL SEARCH</small><h2 id="paletteTitle">Что открыть?</h2></div><button class="icon-action" type="button" data-palette-close>×</button></div>
+      <label class="palette-input"><span>⌕</span><input id="paletteInput" type="search" placeholder="Игра, провайдер или раздел…" autocomplete="off"><kbd>ESC</kbd></label>
+      <div class="palette-results" id="paletteResults"></div>
+    </section>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
