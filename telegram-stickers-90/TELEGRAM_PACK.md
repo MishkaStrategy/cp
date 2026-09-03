@@ -5,14 +5,14 @@ This repository can create the 90-sticker Telegram pack through GitHub Actions.
 ## One-time setup
 
 1. Create a bot in Telegram with `@BotFather` and give it a username.
-2. Send `/start` to that bot once from the Telegram account that should own the sticker pack.
-3. Find the numeric Telegram user ID for that account.
-4. In this GitHub repository open **Settings → Secrets and variables → Actions → New repository secret** and add:
+2. Send `/start` to that bot once from the Telegram account that should own the sticker pack. The workflow detects your numeric Telegram user ID automatically from this private `/start` message.
+3. In this GitHub repository open **Settings → Secrets and variables → Actions → New repository secret** and add:
    - `TELEGRAM_BOT_TOKEN` — token issued by BotFather.
-   - `TELEGRAM_USER_ID` — numeric Telegram user ID of the pack owner.
-5. Download the improved archive `telegram-stickers-90-v2.zip` from the ChatGPT task and upload it to this directory with the exact path:
+4. Download the improved archive `telegram-stickers-90-v2.zip` from the ChatGPT task and upload it to this directory with the exact path:
    `telegram-stickers-90/telegram-stickers-90-v2.zip`.
-6. Never commit the bot token or Telegram user ID as ordinary files.
+5. Never commit the bot token as an ordinary file.
+
+Optional: `TELEGRAM_USER_ID` is still supported as an Actions secret if you ever need to explicitly override the automatically detected owner.
 
 ## Create the pack
 
