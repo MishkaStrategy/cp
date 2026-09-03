@@ -39,18 +39,13 @@ jobs:
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests pillow
 
-      - name: Check required secrets and archive
+      - name: Check required token and archive
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
         shell: bash
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
             echo "Missing repository Actions secret: TELEGRAM_BOT_TOKEN" >&2
-            exit 1
-          fi
-          if [ -z "$TELEGRAM_USER_ID" ]; then
-            echo "Missing repository Actions secret: TELEGRAM_USER_ID" >&2
             exit 1
           fi
           if [ ! -f telegram-stickers-90/telegram-stickers-90-v2.zip ]; then
