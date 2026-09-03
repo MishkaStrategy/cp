@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create or resume a Telegram sticker set from the repository archive."""
+"""Create or resume a Telegram sticker set from the improved 90-sticker archive."""
 
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ import argparse
 import json
 import os
 import re
-import shutil
 import sys
 import tempfile
 import time
@@ -15,7 +14,7 @@ import zipfile
 from pathlib import Path
 
 import requests
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image
 
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
@@ -53,7 +52,7 @@ def _request(method: str, data: dict | None = None, file_path: Path | None = Non
 
         try:
             payload = response.json()
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  # pragma: no cover
             raise TelegramError(
                 f"Telegram {method} returned HTTP {response.status_code} with non-JSON response"
             ) from exc
@@ -111,9 +110,11 @@ def _sticker_number(path: Path) -> int:
     return int(match.group(1)) if match else 10**9
 
 
-def _extract_archive(archive: Path, destination: Path) -> list[Path]:
+def _extract_and_validate(archive: Path, destination: Path) -> list[Path]:
     if not archive.exists():
-        raise FileNotFoundError(f"Archive not found: {archive}")
+        raise FileNotFoundError(
+            f"Archive not found: {archive}. Upload telegram-stickers-90-v2.zip to the repository first."
+        )
 
     with zipfile.ZipFile(archive) as zf:
         zf.extractall(destination)
@@ -121,55 +122,21 @@ def _extract_archive(archive: Path, destination: Path) -> list[Path]:
     stickers = sorted(destination.rglob("sticker_*.webp"), key=_sticker_number)
     if len(stickers) != 90:
         raise TelegramError(f"Expected 90 WebP stickers in archive, found {len(stickers)}")
-    return stickers
 
-
-def _enhance_sticker(source: Path, destination: Path) -> None:
-    """Apply the same v2 cleanup used for the improved local archive."""
-    img = Image.open(source).convert("RGBA")
-    alpha = img.getchannel("A")
-    bbox = alpha.getbbox()
-    obj = img.crop(bbox) if bbox else img
-
-    red, green, blue, alpha = obj.split()
-    rgb = Image.merge("RGB", (red, green, blue))
-    rgb = rgb.filter(ImageFilter.MedianFilter(size=3))
-    rgb = rgb.filter(ImageFilter.UnsharpMask(radius=1.5, percent=160, threshold=3))
-    rgb = ImageEnhance.Contrast(rgb).enhance(1.02)
-    rgb = ImageEnhance.Sharpness(rgb).enhance(1.08)
-    obj = Image.merge("RGBA", (*rgb.split(), alpha))
-
-    max_side = max(obj.size)
-    target = 400
-    scale = min(target / max_side, 1.0) if max_side else 1.0
-    new_size = (
-        max(1, round(obj.width * scale)),
-        max(1, round(obj.height * scale)),
-    )
-    obj = obj.resize(new_size, Image.Resampling.LANCZOS)
-
-    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-    position = ((512 - obj.width) // 2, (512 - obj.height) // 2)
-    canvas.alpha_composite(obj, position)
-    canvas.save(destination, format="WEBP", lossless=True, method=4)
-
-
-def _prepare_stickers(source_files: list[Path], destination: Path) -> list[Path]:
-    destination.mkdir(parents=True, exist_ok=True)
-    result: list[Path] = []
-
-    for index, source in enumerate(source_files, start=1):
-        output = destination / f"sticker_{index:03d}.webp"
-        _enhance_sticker(source, output)
-
-        with Image.open(output) as img:
+    for expected, path in enumerate(stickers, start=1):
+        if _sticker_number(path) != expected:
+            raise TelegramError(
+                f"Sticker numbering must be 001..090; unexpected file: {path.name}"
+            )
+        with Image.open(path) as img:
             if img.size != (512, 512):
-                raise TelegramError(f"Invalid canvas for {output.name}: {img.size}")
-        if output.stat().st_size > 512 * 1024:
-            raise TelegramError(f"Sticker exceeds 512 KiB: {output.name}")
-        result.append(output)
+                raise TelegramError(f"Invalid canvas for {path.name}: {img.size}; expected 512x512")
+            if img.format != "WEBP":
+                raise TelegramError(f"Invalid format for {path.name}: {img.format}")
+        if path.stat().st_size > 512 * 1024:
+            raise TelegramError(f"Sticker exceeds 512 KiB: {path.name}")
 
-    return result
+    return stickers
 
 
 def _input_sticker(emoji: str) -> str:
@@ -257,22 +224,20 @@ def main() -> int:
     pack_name = _normalize_pack_name(args.slug, bot_username)
     pack_url = f"https://t.me/addstickers/{pack_name}"
 
-    print(f"Preparing 90 stickers for pack: {pack_name}")
+    print(f"Preparing pack: {pack_name}")
     with tempfile.TemporaryDirectory(prefix="telegram-stickers-") as tmp:
-        tmp_path = Path(tmp)
-        extracted = _extract_archive(args.archive, tmp_path / "source")
-        prepared = _prepare_stickers(extracted, tmp_path / "prepared")
+        stickers = _extract_and_validate(args.archive, Path(tmp))
 
         current = _get_sticker_set(pack_name)
         if current is None:
             print("Creating sticker set with sticker 1/90", flush=True)
-            _create_set(owner_id, pack_name, title, prepared[0], args.emoji)
+            _create_set(owner_id, pack_name, title, stickers[0], args.emoji)
             start_index = 1
         else:
             existing_count = len(current.get("stickers") or [])
-            if existing_count > len(prepared):
+            if existing_count > len(stickers):
                 raise TelegramError(
-                    f"Existing set has {existing_count} stickers; expected at most {len(prepared)}"
+                    f"Existing set has {existing_count} stickers; expected at most {len(stickers)}"
                 )
             print(
                 f"Sticker set already exists with {existing_count} stickers; resuming from there",
@@ -280,9 +245,9 @@ def main() -> int:
             )
             start_index = existing_count
 
-        for zero_index in range(start_index, len(prepared)):
+        for zero_index in range(start_index, len(stickers)):
             print(f"Uploading sticker {zero_index + 1}/90", flush=True)
-            _add_sticker(owner_id, pack_name, prepared[zero_index], args.emoji)
+            _add_sticker(owner_id, pack_name, stickers[zero_index], args.emoji)
             time.sleep(0.15)
 
     final_set = _get_sticker_set(pack_name)
