@@ -7,7 +7,6 @@ import argparse
 import json
 import os
 import re
-import sys
 import tempfile
 import time
 import zipfile
@@ -25,7 +24,7 @@ class TelegramError(RuntimeError):
     pass
 
 
-def _request(method: str, data: dict | None = None, file_path: Path | None = None) -> dict:
+def _request(method: str, data: dict | None = None, file_path: Path | None = None):
     if not TOKEN:
         raise TelegramError("TELEGRAM_BOT_TOKEN is empty")
 
@@ -38,13 +37,7 @@ def _request(method: str, data: dict | None = None, file_path: Path | None = Non
         try:
             if file_path is not None:
                 fh = file_path.open("rb")
-                files = {
-                    "sticker_file": (
-                        file_path.name,
-                        fh,
-                        "image/webp",
-                    )
-                }
+                files = {"sticker_file": (file_path.name, fh, "image/webp")}
             response = requests.post(url, data=data or {}, files=files, timeout=180)
         finally:
             if fh is not None:
@@ -52,7 +45,7 @@ def _request(method: str, data: dict | None = None, file_path: Path | None = Non
 
         try:
             payload = response.json()
-        except Exception as exc:  # pragma: no cover
+        except Exception as exc:
             raise TelegramError(
                 f"Telegram {method} returned HTTP {response.status_code} with non-JSON response"
             ) from exc
@@ -73,6 +66,50 @@ def _request(method: str, data: dict | None = None, file_path: Path | None = Non
         raise TelegramError(f"Telegram {method} failed ({error_code}): {description}")
 
     raise TelegramError(f"Telegram {method} failed after retries")
+
+
+def _resolve_owner_id() -> int:
+    """Use TELEGRAM_USER_ID if provided; otherwise infer it from the latest private /start."""
+    if OWNER_ID_RAW:
+        try:
+            return int(OWNER_ID_RAW)
+        except ValueError as exc:
+            raise TelegramError("TELEGRAM_USER_ID must be a numeric Telegram user ID") from exc
+
+    updates = _request(
+        "getUpdates",
+        {
+            "limit": "100",
+            "timeout": "0",
+            "allowed_updates": json.dumps(["message"]),
+        },
+    )
+
+    candidates: list[tuple[int, int]] = []
+    for update in updates or []:
+        message = update.get("message") or {}
+        chat = message.get("chat") or {}
+        sender = message.get("from") or {}
+        text = str(message.get("text") or "").strip()
+        if chat.get("type") != "private" or sender.get("is_bot"):
+            continue
+        if not text.startswith("/start"):
+            continue
+        user_id = sender.get("id") or chat.get("id")
+        if user_id is None:
+            continue
+        candidates.append((int(update.get("update_id", 0)), int(user_id)))
+
+    if not candidates:
+        raise TelegramError(
+            "Could not infer Telegram owner ID. Open your newly created bot in Telegram, "
+            "send /start, wait a few seconds, then run the workflow again."
+        )
+
+    candidates.sort()
+    owner_id = candidates[-1][1]
+    print(f"Telegram owner ID detected automatically: {owner_id}", flush=True)
+    return owner_id
 
 
 def _get_sticker_set(name: str) -> dict | None:
@@ -204,13 +241,8 @@ def main() -> int:
 
     if not TOKEN:
         raise TelegramError("Missing TELEGRAM_BOT_TOKEN GitHub Actions secret")
-    if not OWNER_ID_RAW:
-        raise TelegramError("Missing TELEGRAM_USER_ID GitHub Actions secret")
 
-    try:
-        owner_id = int(OWNER_ID_RAW)
-    except ValueError as exc:
-        raise TelegramError("TELEGRAM_USER_ID must be a numeric Telegram user ID") from exc
+    owner_id = _resolve_owner_id()
 
     title = args.title.strip()
     if not 1 <= len(title) <= 64:
@@ -264,5 +296,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (TelegramError, FileNotFoundError, zipfile.BadZipFile) as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
+        print(f"ERROR: {exc}", flush=True)
         raise SystemExit(1)
