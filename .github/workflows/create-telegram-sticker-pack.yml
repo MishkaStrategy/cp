@@ -18,6 +18,11 @@ on:
         required: true
         default: "🐰"
         type: string
+  push:
+    branches:
+      - main
+    paths:
+      - telegram-stickers-90/telegram-stickers-90-v2.zip
 
 permissions:
   contents: read
@@ -59,12 +64,15 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
+          PACK_TITLE: ${{ inputs.pack_title || 'Bunnies 90' }}
+          PACK_SLUG: ${{ inputs.pack_slug || 'bunnies_90' }}
+          PACK_EMOJI: ${{ inputs.emoji || '🐰' }}
         run: |
           python telegram-stickers-90/create_telegram_pack.py \
             --archive telegram-stickers-90/telegram-stickers-90-v2.zip \
-            --title "${{ inputs.pack_title }}" \
-            --slug "${{ inputs.pack_slug }}" \
-            --emoji "${{ inputs.emoji }}"
+            --title "$PACK_TITLE" \
+            --slug "$PACK_SLUG" \
+            --emoji "$PACK_EMOJI"
 
       - name: Show result
         if: success()
