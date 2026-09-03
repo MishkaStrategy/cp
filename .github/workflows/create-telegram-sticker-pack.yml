@@ -2,27 +2,12 @@ name: Create Telegram sticker pack
 
 on:
   workflow_dispatch:
-    inputs:
-      pack_title:
-        description: Telegram sticker-pack title (1-64 chars)
-        required: true
-        default: Bunnies 90
-        type: string
-      pack_slug:
-        description: Short base name; bot suffix is added automatically
-        required: true
-        default: bunnies_90
-        type: string
-      emoji:
-        description: Emoji assigned to every sticker
-        required: true
-        default: "🐰"
-        type: string
   push:
     branches:
       - main
     paths:
       - telegram-stickers-90/telegram-stickers-90-v2.zip
+      - .github/workflows/create-telegram-sticker-pack.yml
 
 permissions:
   contents: read
@@ -44,18 +29,22 @@ jobs:
       - name: Install dependencies
         run: python -m pip install --disable-pip-version-check requests pillow
 
-      - name: Check required token and archive
+      - name: Check required secrets and archive
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
         shell: bash
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
             echo "Missing repository Actions secret: TELEGRAM_BOT_TOKEN" >&2
             exit 1
           fi
+          if [ -z "$TELEGRAM_USER_ID" ]; then
+            echo "Missing repository Actions secret: TELEGRAM_USER_ID" >&2
+            exit 1
+          fi
           if [ ! -f telegram-stickers-90/telegram-stickers-90-v2.zip ]; then
             echo "Missing telegram-stickers-90/telegram-stickers-90-v2.zip" >&2
-            echo "Upload the improved archive from the ChatGPT task to that exact repository path." >&2
             exit 1
           fi
 
@@ -64,16 +53,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
-          PACK_TITLE: ${{ inputs.pack_title || 'Bunnies 90' }}
-          PACK_SLUG: ${{ inputs.pack_slug || 'bunnies_90' }}
-          PACK_EMOJI: ${{ inputs.emoji || '🐰' }}
         run: |
           python telegram-stickers-90/create_telegram_pack.py \
             --archive telegram-stickers-90/telegram-stickers-90-v2.zip \
-            --title "$PACK_TITLE" \
-            --slug "$PACK_SLUG" \
-            --emoji "$PACK_EMOJI"
+            --title "Bunnies 90" \
+            --slug "bunnies_90" \
+            --emoji "🐰"
 
       - name: Show result
         if: success()
-        run: echo "Sticker pack: ${{ steps.telegram.outputs.pack_url }}"
+        run: |
+          echo "Sticker pack: ${{ steps.telegram.outputs.pack_url }}"
