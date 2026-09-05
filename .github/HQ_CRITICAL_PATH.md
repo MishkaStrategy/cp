@@ -2,14 +2,14 @@
 schema: hq-critical-path/v1
 repository: MishkaStrategy/cp
 default_branch: main
-critical_path_revision: 1
-updated_at: 2026-09-04T10:09:35Z
+critical_path_revision: 2
+updated_at: 2026-09-05T09:27:00Z
 project_state: EXECUTING
 critical_path_status: VERIFIED
 release_contract_status: EXPLICIT
 handoff_status: NOT_READY
 basis_ref: main
-basis_sha: 05fe5459fc24f0c1044b8b99eea0894e4131e911
+basis_sha: 674a11dab9baf31df9ce0721bd79f5a3bcb9f87c
 ---
 
 # HQ Critical Path
@@ -24,6 +24,7 @@ Release surface:
 
 - Figma design file `dxbfwhhp5N9sTsKv5ErTPW` is the visual/design source of truth and release target.
 - GitHub `MishkaStrategy/cp`, directory `figma/`, is the technical control/provenance/handoff surface.
+- `MishkaStrategy/ai-control` is the organizational execution-control repository for Worker.ai/Codex runtime execution only; it is not a second project repository.
 
 Definition of RELEASED:
 
@@ -44,6 +45,7 @@ Required release evidence:
 - Live Figma node IDs and screenshots/structural checks for all four mobile counterparts.
 - Source -> mobile mapping with exact node IDs.
 - Final audit status equivalent to `FINAL AUDIT: PASS`, `DEFECTS FOUND: 0`, `MISSING CONTENT: 0`, `UNADAPTED FRAMES: 0`.
+- Worker.ai/Codex terminal result and HQ post-run live verification.
 - Final GitHub report under `figma/` and this control state updated to DONE.
 
 Known explicit exclusions:
@@ -53,23 +55,25 @@ Known explicit exclusions:
 - Do not invent, rewrite, shorten, remove, reorder, or hide source content.
 - Do not create duplicate project directories.
 - GitHub tag/release/deployment is not part of this design release.
+- Codex does not own `HQ_CRITICAL_PATH.md` and must not declare project DONE.
 
 Owner execution policy:
 
-- Codex is explicitly permitted by owner decision on 2026-09-04.
-- Codex remains subject to HQ routing and placement gates and is only eligible for legitimate bounded `kind: code` capability gaps.
-- Mechanical GitHub control is never routed through Codex.
-- Current Figma design execution is non-code and uses the connected Figma execution plane unless a separately proven code capability gap appears.
+- Owner explicitly requires the Figma implementation work to run through the Worker.ai/Codex execution plane.
+- HQ remains decision/control/verification plane and does not perform implementation writes directly in Figma while this owner decision is active.
+- Mechanical GitHub control remains HQ/zero-model work and is never delegated to Codex.
+- The Worker.ai task is an exact `kind: code` runtime-execution packet because the worker must execute the configured Figma MCP/Plugin-API JavaScript runtime against one exact Figma file; no project-repository code patch is required.
+- Placement evidence: the otherwise-capable direct HQ Figma connector is unavailable as an implementation route under the active owner governance decision; no separate project runner with the required configured Figma runtime is available. Required Codex-only capability for this execution is `runtime_execution`.
 
 ## 2. Repository Basis
 
 Default branch: `main`
 
-Default branch observed SHA: `05fe5459fc24f0c1044b8b99eea0894e4131e911`
+Default branch observed SHA: `674a11dab9baf31df9ce0721bd79f5a3bcb9f87c`
 
 Critical-path basis ref: `main`
 
-Critical-path basis SHA: `05fe5459fc24f0c1044b8b99eea0894e4131e911`
+Critical-path basis SHA: `674a11dab9baf31df9ce0721bd79f5a3bcb9f87c`
 
 Canonical integration branch, if any: NONE
 
@@ -79,7 +83,7 @@ Relevant open PRs: NONE
 
 Relevant Issues: NONE
 
-Relevant CI / workflows: no workflow is a release gate for the Figma design target.
+Relevant CI / workflows: no project workflow is a release gate for the Figma design target. External execution is event-driven through `MishkaStrategy/ai-control/.github/workflows/codex-microtask.yml` after an exact queued packet is persisted.
 
 Relevant release/deployment state: release is the validated state of the specified Figma file plus durable GitHub handoff evidence.
 
@@ -92,14 +96,15 @@ Technical workspace and provenance for adapting the specified existing desktop F
 Architecture / major components:
 
 - `figma/README.md` — project/source-of-truth rules.
-- `omniroute-tasks/` — worker/control provenance area; not the visual release target.
+- `omniroute-tasks/prompts/figma-mobile-adapt-zero-defect-20260904.md` — exact Worker.ai/Codex runtime prompt/provenance.
 - Figma file `dxbfwhhp5N9sTsKv5ErTPW`, page `0:1` — actual design target.
+- `MishkaStrategy/ai-control` — external organizational Worker.ai/Codex control plane; `MishkaStrategy/cp` is already allowlisted.
 
 Build / packaging: N/A for current design release.
 
 Tests / validation: Figma structural inspection, source/mobile content reconciliation, spacing/overflow/layer audits, screenshots, and repeated full QA passes.
 
-CI: no current CI gate for this Figma-only release.
+CI: project CI is not a release gate. Worker execution is triggered by a push creating `tasks/queued/**/*.yaml` in `MishkaStrategy/ai-control`.
 
 Release / deployment: validated Figma state; no GitHub deployment required.
 
@@ -107,11 +112,11 @@ Governance:
 
 - Live organizational HQ master: `MishkaStrategy/.github/HQ_MASTER_PROMPT.md`, version 1.2.
 - Project-specific repository/Figma source-of-truth rules apply.
-- Owner explicitly permits Codex subject to HQ route/placement rules.
+- Owner explicitly requires Worker.ai/Codex for implementation execution; HQ retains routing and release authority.
 
 External release dependencies:
 
-Connected Figma file write/read access and reliable post-write verification.
+Worker.ai self-hosted Codex runner with configured Figma integration; Figma file write/read access; reliable post-write verification.
 
 Material findings:
 
@@ -130,7 +135,7 @@ The child `MacBook Air ...` frames are page sections, not separate release pages
 
 Status: SATISFIED
 
-Evidence: live Figma Plugin API inventory of page `0:1`; source nodes and dimensions recorded above; desktop baseline screenshots captured for all four pages.
+Evidence: live Figma inventory of page `0:1`; source nodes and dimensions recorded above; desktop baseline screenshots captured for all four pages.
 
 Blocking items: NONE
 
@@ -140,7 +145,7 @@ Status: UNSATISFIED
 
 Evidence: no verified four-page 390 px mobile set exists yet.
 
-Blocking items: adaptation work for four source pages.
+Blocking items: Worker.ai/Codex runtime adaptation.
 
 ### GATE-3 — Per-screen integrity and zero-defect QA
 
@@ -188,47 +193,27 @@ Acceptance condition: exact source count and IDs verified live.
 
 Evidence: `N=4`; nodes `1:16`, `1:3229`, `1:4687`, `1:5768`.
 
-### CP-2 — Adapt `главная` to 390 px and pass per-screen QA
+### CP-2 — Execute full four-page mobile adaptation and per-screen QA through Worker.ai/Codex
 
 Status: ACTIVE
 
 Release gate: GATE-2, GATE-3
 
-Why critical: first complete source->mobile implementation establishes and validates the mobile adaptation method against the most content-rich mixed-layout page.
+Why critical: all remaining design implementation and per-screen integrity gates depend on an exact Worker.ai runtime execution against the configured Figma integration.
 
 Depends on: CP-1.
 
-Blocks: reliable completion of the remaining screens and global QA.
+Blocks: global QA and handoff.
 
-Execution plane: HQ_DIRECT
+Execution plane: CODEX
 
-Exact scope: create `главная / Mobile / 390` as a separate mobile counterpart; preserve all source content; adapt each section; 10/60/20 spacing; burger header; content-driven height; minimum two full QA passes; original `1:16` untouched.
+Exact scope: execute the existing zero-defect runtime specification in `omniroute-tasks/prompts/figma-mobile-adapt-zero-defect-20260904.md` against Figma file `dxbfwhhp5N9sTsKv5ErTPW`; create exactly four separate mobile counterparts; preserve originals/content; enforce 390/10/60/20/burger/content-driven-height rules; perform at least two full QA passes per source/mobile pair.
 
-Acceptance condition: mobile page width 390; source/mobile content integrity 100%; no clipping/overlap/overflow/structural defects; final per-screen pass finds zero new defects.
+Acceptance condition: all four source/mobile pairs individually PASS with 100% content integrity and zero clipping/overlap/overflow/structural defects on their last full audit.
 
-Evidence: pending live Figma node ID and validation.
+Evidence: pending Worker.ai/Codex terminal result plus HQ live Figma verification.
 
-### CP-3 — Adapt `управление`, `партнерам`, `франчайзи` and pass per-screen QA
-
-Status: PENDING
-
-Release gate: GATE-2, GATE-3
-
-Why critical: release requires coverage of all four source pages.
-
-Depends on: CP-2 validated method; each page itself is otherwise content-independent.
-
-Blocks: global QA.
-
-Execution plane: HQ_DIRECT
-
-Exact scope: one separate 390 px counterpart per remaining source with the same mandatory layout/content/QA contract.
-
-Acceptance condition: all four source/mobile pairs individually PASS.
-
-Evidence: pending.
-
-### CP-4 — Global cross-screen QA and fresh content reconciliation
+### CP-3 — Global cross-screen QA and fresh content reconciliation
 
 Status: PENDING
 
@@ -236,19 +221,19 @@ Release gate: GATE-4
 
 Why critical: required release-wide consistency and zero-defect gate.
 
-Depends on: CP-2, CP-3.
+Depends on: CP-2.
 
 Blocks: final release evidence.
 
-Execution plane: HQ_DIRECT
+Execution plane: CODEX for implementation/fixes; HQ_DIRECT for independent post-run verification.
 
 Exact scope: widths; 10/60/20 spacing; headers/burgers; typography; buttons/cards/forms/images/footers; repeated components; fresh desktop->mobile item reconciliation; cleanup only technical trash created during execution; full re-audit after cleanup.
 
-Acceptance condition: complete global pass finds zero new issues and no missing content/unadapted source pages.
+Acceptance condition: complete global pass finds zero new issues and no missing content/unadapted source pages; HQ independently verifies the claimed final state live.
 
 Evidence: pending.
 
-### CP-5 — Persist final mapping/audit evidence and verify release
+### CP-4 — Persist final mapping/audit evidence and verify release
 
 Status: PENDING
 
@@ -256,7 +241,7 @@ Release gate: GATE-5
 
 Why critical: project rules require durable technical handoff and HQ cannot declare DONE without release evidence.
 
-Depends on: CP-4.
+Depends on: CP-3.
 
 Blocks: DONE.
 
@@ -272,97 +257,105 @@ Evidence: pending.
 
 HQ:
 
-- Executor: HQ_DIRECT via connected Figma integration.
-- Exact scope: CP-2, source `главная` node `1:16` only until its per-screen PASS.
-- Write surface: same Figma file, new mobile counterpart only; original source subtree is read-only.
-- Expected evidence: new mobile node ID, dimensions, content reconciliation, screenshots/structural checks, two complete QA passes.
+- Executor: HQ control/verification only.
+- Exact scope: maintain critical path, enqueue one exact Worker.ai/Codex runtime task, inspect terminal result, independently verify Figma, persist final report/control state.
+- Write surface: GitHub control/provenance; no direct Figma implementation writes while owner Codex-only execution decision is active.
+- Expected evidence: exact ai-control task ID/path/run, terminal packet, post-run Figma verification.
 
-Workers: NONE
+Workers: NONE separate from Worker.ai/Codex pool.
 
-Codex: NONE active. Owner permission exists; no current `kind: code` placement evidence exists.
+Codex:
 
-Zero-model control: NONE active.
+- Executor: Worker.ai self-hosted Codex pool through `MishkaStrategy/ai-control`.
+- Planned exact task id: `cp-figma-mobile-zero-defect-20260905-a1`.
+- Target repository: `MishkaStrategy/cp`.
+- Execution capability: `runtime_execution` using configured Figma integration.
+- Write surface: Figma file `dxbfwhhp5N9sTsKv5ErTPW`; target repository is source/provenance only and should remain unchanged by the runtime task.
+- Expected evidence: task terminal result, four mobile node IDs/mapping, audit summary and verified Figma state.
 
-CI/runtime: NONE relevant.
+Zero-model control: `ai-control` router/pre-model gate only; no project GitHub-control action delegated to Codex.
+
+CI/runtime: event-driven `codex-microtask.yml` after queue persistence.
 
 ## 7. Safe Parallel Work
 
-NONE — all useful current slices write to the same Figma file/page and require consistent adaptation conventions plus repeated post-write validation. Concurrent writers would add coordination/conflict risk without enough wall-clock benefit. Worker gate result: `NO_SAFE_NONOVERLAP_SCOPE`.
+NONE — only one Codex task per target repository may run, and concurrent writers to the same Figma file would create avoidable conflict risk. Worker gate result: `NO_SAFE_NONOVERLAP_SCOPE`.
 
 ## 8. Current Blockers
 
-NONE.
+NONE before enqueue. The task must fail closed if the Worker.ai runner lacks Figma auth/integration or reliable post-write verification.
 
 ## 9. Critical Path Audits
 
 Repository Coverage Audit: PASS
 
-Evidence: current repository identity/default branch/HEAD, `figma/`, `.github`, project control artifacts, open PRs/Issues, and relevant Figma target surfaces were checked. No repository build/deploy subsystem is a hidden gate for this Figma-only release.
+Evidence: current repository/default branch/HEAD, `figma/`, project control artifacts, open PRs/Issues, relevant Figma target surfaces, and the organizational `ai-control` execution plane were checked.
 
 Evidence Audit: PASS
 
-Evidence: release constraints come from explicit owner/project instructions; repository basis is pinned to live `main` SHA; source count/dimensions/node IDs and screenshots come from live Figma inspection. No critical claim relies only on stale chat memory.
+Evidence: source count/dimensions/node IDs and screenshots come from live Figma; Worker.ai routing contract and allowlist/workflow/schema were live-read from `MishkaStrategy/ai-control`; direct implementation route restriction is an explicit current owner decision.
 
 Release Alignment Audit: PASS
 
-Evidence: every CP node is required either to create one of the mandatory mobile counterparts, prove mandatory zero-defect/content gates, or persist required release evidence. No unrelated repository cleanup/refactor is included.
+Evidence: runtime task scope is exactly the four required mobile counterparts plus mandatory QA; HQ-only final persistence remains separate.
 
 Dependency & Ordering Audit: PASS
 
-Evidence: source inventory must precede writes; per-screen adaptation must precede per-screen QA; all four per-screen PASS states must precede global reconciliation; final evidence persistence follows validated Figma state. No hidden build/deploy/signing dependency applies.
+Evidence: source inventory precedes Worker execution; Worker completion precedes independent global verification; durable handoff follows verified Figma state.
 
 Execution & Parallelism Audit: PASS
 
-Evidence: each next action has bounded source node, write surface, acceptance, and verification. Parallel Figma writers were rejected because the common file/page plus convention/QA coupling creates avoidable conflict risk.
+Evidence: one exact runtime task writes one Figma file; no concurrent writers; HQ preserves control and independently verifies.
 
 Adversarial Audit: PASS
 
-Evidence: strongest contrary hypotheses were checked: there are four top-level source pages rather than dozens of section pages; the child `MacBook Air ...` frames are nested sections; no open PR/Issue or CI gate changes the release target; the release is not a GitHub deployment; Codex permission does not make non-code Figma execution a Codex task.
+Evidence: `MishkaStrategy/cp` is allowlisted in `ai-control`; `codex-microtask.yml` is event-driven on `tasks/queued/**/*.yaml`; no active queued/running task currently exists for `MishkaStrategy/cp`; the task uses `runtime_execution`, not GitHub control.
 
 Material findings and resolutions:
 
-- Source count resolved to `N=4` from live hierarchy.
-- Release target is the four top-level desktop pages, not each nested section frame.
-- Direct Figma execution is the current cheapest reliable safe route.
+- Source count remains `N=4`.
+- Owner requires Worker.ai/Codex implementation execution; direct HQ Figma implementation is therefore not an authorized normal path in this project state.
+- `MishkaStrategy/ai-control` is the correct control repository; `cp` is already allowlisted.
+- One exact runtime task avoids cross-writer Figma conflicts and uses the existing zero-defect specification.
 
 ## 10. Next Action
 
 Exact next action:
 
-Create a separate `главная / Mobile / 390` counterpart from source `1:16`, preserving all content, then adapt its first section/header and proceed section-by-section with immediate validation.
+Persist `tasks/queued/MishkaStrategy__cp/cp-figma-mobile-zero-defect-20260905-a1.yaml` in `MishkaStrategy/ai-control` with live `cp/main` source SHA, route `CODEX`, placement capability `runtime_execution`, and the exact Figma zero-defect goal; then verify the event-driven workflow accepted/claimed it.
 
-Executor: HQ_DIRECT via Figma.
+Executor: HQ for deterministic enqueue; Worker.ai/Codex for runtime execution.
 
-Expected evidence: new mobile wrapper node ID and first-section write/validation IDs.
+Expected evidence: queue commit, Actions run/claim state, exact task ID/path.
 
-Acceptance condition: original `1:16` unchanged; new counterpart exists at width 390 in clear canvas space; first section is structurally/visually valid before continuing.
+Acceptance condition: the queued packet is accepted by zero-model gates and reaches the Worker.ai/Codex executor, or returns a concrete fail-closed blocker.
 
 ## 11. Last Material Revision
 
 What changed:
 
-Initial verified HQ critical path established. Owner decision that Codex is permitted was incorporated as durable routing policy. Live Figma source inventory established `N=4`.
+Execution routing changed from direct HQ Figma implementation to Worker.ai/Codex runtime execution after explicit owner instruction. The organizational `ai-control` workflow/schema/allowlist were live-verified and incorporated.
 
 Why the critical path changed:
 
-This is the first canonical project control snapshot.
+Owner requires the implementation to run through Worker.ai/Codex rather than direct Figma writes from HQ.
 
 Evidence causing the change:
 
-Live GitHub basis `05fe5459fc24f0c1044b8b99eea0894e4131e911`, live Figma hierarchy/screenshots, explicit owner/project requirements.
+Explicit owner decision; live `MishkaStrategy/ai-control` README/AGENTS/schema/workflow; `MishkaStrategy/cp` present and enabled in `repos.yaml`; no active cp task in queued/running state.
 
 ## 12. Chat Rotation Checkpoint
 
 Safe to rotate chat: NO
 
-Last completed atomic action: live source inventory and desktop visual baseline for all four Figma source pages.
+Last completed atomic action: verified Worker.ai/Codex control plane, allowlist, workflow trigger, task schema, and absence of active cp tasks.
 
-Active external executions and exact refs: NONE.
+Active external executions and exact refs: planned task `cp-figma-mobile-zero-defect-20260905-a1`, not yet enqueued at this snapshot.
 
-Unpersisted material reasoning: current CP-2 execution has not yet produced its first mobile node/write evidence.
+Unpersisted material reasoning: NONE.
 
-Recovery entrypoint: re-read live master and this file; validate `main`; live-check source nodes and whether `главная / Mobile / 390` exists; if absent, create it; if present, inspect its exact state before continuing.
+Recovery entrypoint: re-read live master and this file; validate `cp/main`; inspect exact ai-control task ID across queued/running/done/blocked before creating anything new; never duplicate the task.
 
-Exact next action after recovery: resume CP-2 from the first not-yet-verified mobile section without duplicating an existing mobile counterpart.
+Exact next action after recovery: enqueue the planned task only if it does not already exist; otherwise resume verification from its current terminal/running state.
 
-Rotation blockers, if any: WAVE is open for CP-2 and no completed atomic mobile write checkpoint exists yet.
+Rotation blockers, if any: Worker.ai task has not yet reached a terminal state and release gates GATE-2..5 remain unsatisfied.
